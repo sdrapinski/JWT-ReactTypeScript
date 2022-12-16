@@ -4,7 +4,7 @@ import Cookies from "universal-cookie";
 import jwt from "jwt-decode";
 import { AppContext } from "../AppContext";
 
-interface GetTokensResponse {
+interface UserResponse {
   token: string;
   refreshToken: string;
 }
@@ -18,9 +18,10 @@ interface User {
 }
 
 const Login = () => {
-  const [email, setemail] = useState("");
+  const [email, setemail] = useState("jakis@email.com");
   const [user, setUser] = useState<User>();
   const [password, setpassword] = useState("");
+  const [info, setinfo] = useState("");
   const appContext = useContext(AppContext);
 
   const cookie = new Cookies();
@@ -38,26 +39,37 @@ const Login = () => {
     setUser(decoded);
 
     //set cookie
-    cookie.set("jwt_authorization", jwt_token, {
+    cookie.set("jwt_RefreshToken", jwt_token, {
       expires: new Date(decoded.exp * 1000),
     });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { data } = await axios.post<GetTokensResponse>(
-      "http://localhost:8000/login",
-      { email: email },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-    console.log(data);
-    login(data.refreshToken);
-    appContext?.setaccessToken(data.token);
+    let data;
+    axios
+      .post<UserResponse>(
+        `${appContext!.apiEndPoint}/login`,
+        { email: email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        data = response.data;
+
+        login(data.refreshToken);
+        appContext?.setaccessToken(data.token);
+        setinfo("Zalogowano");
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        setinfo(error.response.data);
+      });
   };
 
   return (
@@ -81,6 +93,7 @@ const Login = () => {
         <br />
         <input type="submit" value="Wyslij" />
       </form>
+      {info}
     </div>
   );
 };

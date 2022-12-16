@@ -1,8 +1,9 @@
 import { createContext, useState } from "react";
 
 interface AppContextInterface {
-  accessToken: string;
-  setaccessToken: (newstring: string) => void;
+  accessToken: string | null;
+  setaccessToken: (newstring: string | null) => void;
+  apiEndPoint: string;
 }
 interface AppProviderProps {
   children?: React.ReactNode;
@@ -11,9 +12,10 @@ interface AppProviderProps {
 export const AppContext = createContext<AppContextInterface | null>(null);
 
 const AppProvider = ({ children }: AppProviderProps) => {
-  const [accessToken, setaccessToken] = useState("");
+  const apiEndPoint = "http://localhost:8000";
+  const [accessToken, setaccessToken] = useState<string | null>(null);
   return (
-    <AppContext.Provider value={{ accessToken, setaccessToken }}>
+    <AppContext.Provider value={{ accessToken, setaccessToken, apiEndPoint }}>
       {children}
     </AppContext.Provider>
   );
