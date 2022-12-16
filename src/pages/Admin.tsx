@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useState, useEffect, useContext } from "react";
-import Cookies from "universal-cookie";
 import { AppContext } from "../AppContext";
 
 const Admin = () => {
@@ -8,21 +7,24 @@ const Admin = () => {
   const appContext = useContext(AppContext);
 
   useEffect(() => {
-    axios
-      .get(`${appContext!.apiEndPoint}/admin`, {
-        headers: {
-          authorization: `Bearer ${appContext?.accessToken}`,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    if (appContext?.accessToken)
+      axios
+        .get(`${appContext!.apiEndPoint}/admin`, {
+          headers: {
+            authorization: `Bearer ${appContext?.accessToken}`,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          setdata(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+          setdata("Cos poszło nie tak");
+        });
   }, []);
 
-  return <div>Admin</div>;
+  return <div> {data}</div>;
 };
 
 export default Admin;

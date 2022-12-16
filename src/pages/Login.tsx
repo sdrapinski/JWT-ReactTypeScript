@@ -1,30 +1,20 @@
 import axios from "axios";
 import React, { useState, useContext } from "react";
-import Cookies from "universal-cookie";
-import jwt from "jwt-decode";
+
 import { AppContext } from "../AppContext";
 
-interface UserResponse {
-  token: string;
+interface JwtInterface {
+  accessToken: string;
   refreshToken: string;
-}
-
-interface User {
-  email: string;
-  exp: number;
-  iat: number;
-  id: number;
-  name: string;
 }
 
 const Login = () => {
   const [email, setemail] = useState("jakis@email.com");
-  const [user, setUser] = useState<User>();
+
+  const [expired, setexpired] = useState<Date>();
   const [password, setpassword] = useState("");
   const [info, setinfo] = useState("");
   const appContext = useContext(AppContext);
-
-  const cookie = new Cookies();
 
   const handleEmailChange = (e: React.FormEvent<HTMLInputElement>) => {
     setemail(e.currentTarget.value);
@@ -33,22 +23,11 @@ const Login = () => {
     setpassword(e.currentTarget.value);
   };
 
-  const login = (jwt_token: string) => {
-    const decoded: User = jwt(jwt_token);
-    console.log(decoded);
-    setUser(decoded);
-
-    //set cookie
-    cookie.set("jwt_RefreshToken", jwt_token, {
-      expires: new Date(decoded.exp * 1000),
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let data;
     axios
-      .post<UserResponse>(
+      .post<JwtInterface>(
         `${appContext!.apiEndPoint}/login`,
         { email: email },
         {
@@ -60,11 +39,9 @@ const Login = () => {
       )
       .then((response) => {
         data = response.data;
-
-        login(data.refreshToken);
-        appContext?.setaccessToken(data.token);
-        setinfo("Zalogowano");
         console.log(data);
+        appContext?.createUserAndRefreshToken(data);
+        setinfo("Zalogowano");
       })
       .catch((error) => {
         console.error(error);
