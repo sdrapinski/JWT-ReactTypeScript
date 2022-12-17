@@ -11,7 +11,6 @@ interface JwtInterface {
 const Login = () => {
   const [email, setemail] = useState("jakis@email.com");
 
-  const [expired, setexpired] = useState<Date>();
   const [password, setpassword] = useState("");
   const [info, setinfo] = useState("");
   const appContext = useContext(AppContext);
@@ -28,7 +27,7 @@ const Login = () => {
     let data;
     axios
       .post<JwtInterface>(
-        `${appContext!.apiEndPoint}/login`,
+        `${appContext!.apiEndpoint}/login`,
         { email: email },
         {
           headers: {
