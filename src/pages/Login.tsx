@@ -50,25 +50,37 @@ const Login = () => {
 
   return (
     <div>
-      <form action="#" onSubmit={handleSubmit} method="POST">
-        <label>
-          {" "}
-          email
-          <input type="email" value={email} onChange={handleEmailChange} />{" "}
-        </label>{" "}
-        <br />
-        <label>
-          {" "}
-          haslo
-          <input
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-          />{" "}
-        </label>{" "}
-        <br />
-        <input type="submit" value="Wyslij" />
-      </form>
+      {appContext?.user ? (
+        <ul>
+          <li> {appContext.user.name} </li>
+          <li> {appContext.user.email} </li>
+        </ul>
+      ) : (
+        <form action="#" onSubmit={handleSubmit} method="POST">
+          <label>
+            {" "}
+            email
+            <input
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+            />{" "}
+          </label>{" "}
+          <br />
+          <label>
+            {" "}
+            haslo
+            <input
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+            />{" "}
+          </label>{" "}
+          <br />
+          <input type="submit" value="Wyslij" />
+        </form>
+      )}
+
       {info}
     </div>
   );

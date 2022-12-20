@@ -8,14 +8,7 @@ const Admin = () => {
 
   useEffect(() => {
     async function fetch() {
-      let token = appContext?.accessToken;
-      if (appContext?.isAccessTokenExpired()) {
-        token = await appContext.getNewAccessToken();
-        if (token === undefined) {
-          token = appContext?.accessToken;
-          console.error("Token is undefined!");
-        }
-      }
+      let token = await appContext?.checkAccessToken();
 
       axios
         .get(`${appContext!.apiEndpoint}/admin`, {
@@ -27,7 +20,8 @@ const Admin = () => {
           setdata(response.data);
         })
         .catch((error) => {
-          setdata("Cos poszło nie tak");
+          setdata("Brak dostępu");
+          console.error(error);
         });
     }
     fetch();
@@ -37,7 +31,9 @@ const Admin = () => {
     <div>
       {" "}
       {data}{" "}
-      <button onClick={appContext?.getNewAccessToken}>Nowy token </button>{" "}
+      <button onClick={appContext?.getNewAccessToken}>
+        Nowy token - opcja reczna{" "}
+      </button>{" "}
     </div>
   );
 };

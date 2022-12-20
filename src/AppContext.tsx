@@ -8,9 +8,12 @@ interface AppContextInterface {
   setaccessToken: (newstring: string | null) => void;
   apiEndpoint: string;
   createUser: (token: string) => void;
+  user: User | undefined;
+  setUser: (newuser: User | undefined) => void;
   createUserAndRefreshToken: (data: JwtInterface) => void;
   isAccessTokenExpired: () => void;
   getNewAccessToken: () => Promise<string | undefined>;
+  checkAccessToken: () => Promise<string | null>;
 }
 interface AppProviderProps {
   children?: React.ReactNode;
@@ -71,6 +74,19 @@ const AppProvider = ({ children }: AppProviderProps) => {
     }
   };
 
+  const checkAccessToken = async () => {
+    let token = accessToken;
+    if (isAccessTokenExpired()) {
+      token = await getNewAccessToken();
+      if (!token) {
+        console.error("Token is undefined!");
+        return null;
+      }
+    }
+    console.log(token);
+    return token;
+  };
+
   const getNewAccessToken = async () => {
     const refreshToken = cookie.get("jwt_RefreshToken");
     let token: JwtInterface = { accessToken: "", refreshToken: "" };
@@ -96,6 +112,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
         });
       return token.accessToken;
     } else {
+      // logout
       console.error("no access token");
       return "";
     }
@@ -111,6 +128,9 @@ const AppProvider = ({ children }: AppProviderProps) => {
         createUserAndRefreshToken,
         isAccessTokenExpired,
         getNewAccessToken,
+        checkAccessToken,
+        user,
+        setUser,
       }}
     >
       {children}

@@ -16,6 +16,7 @@ const Logout = () => {
 
   const logout = () => {
     appContext?.setaccessToken(null);
+    appContext?.setUser(undefined);
     cookie.remove("jwt_RefreshToken");
   };
 
