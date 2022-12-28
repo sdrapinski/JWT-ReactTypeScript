@@ -27,8 +27,11 @@ const Login = () => {
     let data;
     axios
       .post<JwtInterface>(
-        `${appContext!.apiEndpoint}/login`,
-        { email: email },
+        `http://localhost:8000/api/v1/users`,
+        {
+          email: "hihidam411@khaxan1.com",
+          password: "Szymon123@#XD",
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -39,12 +42,13 @@ const Login = () => {
       .then((response) => {
         data = response.data;
         console.log(data);
-        appContext?.createUserAndRefreshToken(data);
-        setinfo("Zalogowano");
+        console.log("ok");
+        // appContext?.createUserAndRefreshToken(data);
+        //  setinfo("Zalogowano");
       })
       .catch((error) => {
         console.error(error);
-        setinfo(error.response.data);
+        // setinfo(error.response.data);
       });
   };
 
